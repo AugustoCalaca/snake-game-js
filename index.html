@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Game</title>
+</head>
+<body>
+  <canvas id="stage" width="625" height="625"></canvas>
+  <script>
+    window.onload = function() {
+      let stage = document.getElementById('stage');
+      let context = stage.getContext("2d");
+      let amountFood = 1;
+      const keyPress = function(event) {
+        switch(event.keyCode) {
+          case 37: // left 
+            run[0] = -speed;
+            run[1] = 0;
+            break;
+          case 38: // up
+            run[0] = 0;
+            run[1] = -speed;
+            break;
+          case 39: // right
+            run[0] += speed;
+            run[1] = 0;
+            break;
+          case 40: // down
+            run[0] = 0;
+            run[1] = speed;
+            break;
+          default: break;
+        }
+      }
+
+      document.addEventListener("keydown", keyPress);
+
+      const speed = 1;
+      const head = [ 10, 15 ];
+      const run = [ 0, 0 ];
+      const pieces = 25;
+      const quare = 25;
+      const food = [ 
+        Math.floor(Math.random() * pieces),
+        Math.floor(Math.random() * pieces) 
+      ];
+      const tail = [];
+
+      // eat 
+      const eat = function() {
+        if(head[0] === food[0] && head[1] === food[1]) {
+          tail.shift({ x: food[0], y: food[1] });
+          food[0] = Math.floor(Math.random() * pieces);
+          food[1] = Math.floor(Math.random() * pieces);
+          amountFood++;
+        }
+      }
+      
+      const game = function() {
+        head[0] += run[0];
+        head[1] += run[1];
+        tail.push({ x: head[0], y: head[1] });
+        while(tail.length > amountFood)
+          tail.shift();
+
+        if(head[0] < 0) 
+          head[0] = pieces;
+        if(head[0] > pieces - 1) 
+          head[0] = 0;
+        if(head[1] < 0)
+          head[1] = pieces;
+        if(head[1] > pieces - 1)
+          head[1] = 0;
+        
+        // fill canvas
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, stage.width, stage.height);
+
+        // fill food
+        context.fillStyle = 'red';
+        context.fillRect(food[0] * quare, food[1] * quare, quare, quare);
+
+        // fill tail
+        const fillTail = function(item) {
+          context.fillRect(item.x * quare, item.y * quare, quare - 1, quare - 1);
+        }
+        context.fillStyle = 'gray';
+        tail.map(fillTail);
+        eat();
+
+      }
+
+      setInterval(game, 100);
+     
+    }
+
+    
+
+  </script>
+</body>
+</html>
